@@ -827,7 +827,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### Contact
 
 - **Project Team**: [Opps,AllAI]
-- **Team Email**: [oopsallai@tigeranalytics.com]
+- **Team Email**: [oopsallai@example.com]
 
 ---
 
