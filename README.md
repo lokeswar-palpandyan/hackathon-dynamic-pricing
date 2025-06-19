@@ -24,7 +24,7 @@ This project implements a **complete end-to-end machine learning pipeline** for 
 | **Phase 3** | ✅ Complete | Comprehensive Testing Framework |
 | **Phase 4** | ✅ Complete | Monitoring and Logging Infrastructure |
 | **Phase 5** | ✅ Complete | Automated Retraining Pipelines |
-| **Phase 6** | ✅ Complete | CI/CD Pipeline with GitHub Actions |
+| **Phase 6** | ✅ Complete | MLOps CI/CD Pipeline with GitHub Actions |
 | **Phase 7** | ✅ Complete | Web Application (API + UI) |
 
 ## 🏗️ Architecture Overview
@@ -38,7 +38,7 @@ graph TB
     E --> F[FastAPI Backend]
     F --> G[Streamlit Dashboard]
     
-    H[GitHub Actions CI/CD] --> I[Azure Deployment]
+    H[GitHub Actions MLOps CI/CD] --> I[Azure Deployment]
     I --> F
     I --> G
     
@@ -68,7 +68,7 @@ graph TB
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/hackathon-dynamic-pricing.git
+git clone https://github.com/lokeswar-palpandyan/hackathon-dynamic-pricing.git
 cd hackathon-dynamic-pricing
 
 # Create virtual environment
@@ -146,10 +146,10 @@ streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0
 
 | Service | URL | Description |
 |---------|-----|-------------|
-| **🎯 Main Dashboard** | http://localhost:8501 | Interactive Streamlit UI |
-| **🔌 API Endpoints** | http://localhost:8000 | FastAPI backend |
-| **📖 API Documentation** | http://localhost:8000/docs | Interactive API docs |
-| **🔍 Health Check** | http://localhost:8000/health | System health status |
+| **🎯 Main Dashboard** | https://oopsallaiui.azurewebsites.net | Interactive Streamlit UI |
+| **🔌 API Endpoints** | https://oopsallaiapi.azurewebsites.net/ | FastAPI backend |
+| **📖 API Documentation** | https://oopsallaiapi.azurewebsites.net/docs | Interactive API docs |
+| **🔍 Health Check** | https://oopsallaiapi.azurewebsites.net/health | System health status |
 
 ## 📱 Application Features
 
@@ -223,8 +223,8 @@ POST /optimize/price
 ```bash
 GET /model/info           # Model metadata
 GET /features/importance  # Feature importance rankings
-GET /metrics/model       # Performance metrics
-GET /health              # Health check
+GET /metrics/model        # Performance metrics
+GET /health               # Health check
 ```
 
 ## 🔧 Configuration
@@ -294,19 +294,19 @@ Access monitoring data through:
 
 ## 🔄 Automated Workflows
 
-### CI/CD Pipeline
+### MLOps CI/CD Pipeline
 
-The GitHub Actions pipeline automatically:
+The main pipeline is defined in `.github/workflows/mlops-cicd-workflow.yml` and automatically:
 
 1. **Code Quality**: Formatting, linting, type checking
-2. **Testing**: Unit, integration, and security tests
+2. **Testing**: Unit, integration, and security tests (using `notebooks/03_testing_framework.py`)
 3. **Building**: Docker images and artifacts
-4. **Deployment**: Staging and production environments
+4. **Deployment**: Staging and production environments (Azure)
 5. **Monitoring**: Setup alerts and dashboards
 
 ### Model Retraining
 
-Automated retraining triggers on:
+Automated retraining is managed by `.github/workflows/model-retraining.yml` and triggers on:
 
 - **Schedule**: Weekly on Sundays at 3 AM UTC
 - **Performance**: When model accuracy degrades
@@ -315,7 +315,7 @@ Automated retraining triggers on:
 
 ### A/B Testing
 
-The system implements Champion-Challenger strategy:
+The challenger evaluation and champion promotion are managed by `.github/workflows/ab-test-evaluation.yml`:
 
 1. **Champion**: Current production model (90% traffic)
 2. **Challenger**: New trained model (10% traffic)
@@ -378,9 +378,6 @@ python generate_sample_data.py
    ```bash
    # Push to main branch triggers production deployment
    git push origin main
-   
-   # Or trigger manually
-   gh workflow run ci-cd-pipeline.yml
    ```
 
 #### Manual Azure Deployment
@@ -407,8 +404,7 @@ az container create \
   --image your-registry/dynamic-pricing-ui:latest \
   --dns-name-label dynamic-pricing-ui \
   --ports 8501 \
-  --environment-variables API_BASE_URL=http://dynamic-pricing-api.eastus.azurecontainer.io:8000
-```
+  --environment-variables API_BASE_URL=https://oopsallaiapi.azurewebsites.net/
 
 ### Production Deployment
 
@@ -449,7 +445,7 @@ import requests
 import json
 
 # Configuration
-API_BASE_URL = "http://localhost:8000"
+API_BASE_URL = "https://oopsallaiapi.azurewebsites.net/"
 
 # Single prediction
 def get_pricing_prediction(features):
@@ -482,7 +478,7 @@ print(f"Recommendation: {result['pricing_recommendation']}")
 ```javascript
 // Fetch prediction
 async function getPricingPrediction(features) {
-    const response = await fetch('http://localhost:8000/predict', {
+    const response = await fetch('https://oopsallaiapi.azurewebsites.net/predict', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -518,10 +514,10 @@ getPricingPrediction(features).then(result => {
 
 ```bash
 # Health check
-curl -X GET "http://localhost:8000/health"
+curl -X GET "https://oopsallaiapi.azurewebsites.net/health"
 
 # Single prediction
-curl -X POST "http://localhost:8000/predict" \
+curl -X POST "https://oopsallaiapi.azurewebsites.net/predict" \
      -H "Content-Type: application/json" \
      -d '{
        "MRP": 100.0,
@@ -539,15 +535,15 @@ curl -X POST "http://localhost:8000/predict" \
      }'
 
 # Price optimization
-curl -X POST "http://localhost:8000/optimize/price?price_range=[60,120]" \
+curl -X POST "https://oopsallaiapi.azurewebsites.net/optimize/price?price_range=[60,120]" \
      -H "Content-Type: application/json" \
      -d '{...features...}'
 
 # Model information
-curl -X GET "http://localhost:8000/model/info"
+curl -X GET "https://oopsallaiapi.azurewebsites.net/model/info"
 
 # Feature importance
-curl -X GET "http://localhost:8000/features/importance"
+curl -X GET "https://oopsallaiapi.azurewebsites.net/features/importance"
 ```
 
 ## 🔧 Troubleshooting
@@ -573,7 +569,7 @@ python -c "import joblib; model = joblib.load('models/dynamic_pricing_model.pkl'
 ```bash
 # Problem: Cannot connect to API
 # Solution: Check if API is running
-curl http://localhost:8000/health
+curl https://oopsallaiapi.azurewebsites.net/health
 
 # Check Docker container status
 docker-compose ps
@@ -590,7 +586,7 @@ docker-compose restart api
 ```bash
 # Problem: Streamlit not loading
 # Solution: Check UI service
-curl http://localhost:8501/_stcore/health
+curl https://oopsallaiui.azurewebsites.net/_stcore/health
 
 # Check UI logs
 docker-compose logs ui
@@ -599,7 +595,7 @@ docker-compose logs ui
 docker-compose restart ui
 
 # Verify API connectivity from UI
-docker-compose exec ui curl http://api:8000/health
+docker-compose exec ui curl https://oopsallaiapi.azurewebsites.net/health
 ```
 
 #### 4. Data Issues
@@ -662,7 +658,7 @@ docker inspect dynamic-pricing-api
 python -c "
 import requests
 try:
-    r = requests.get('http://localhost:8000/health')
+    r = requests.get('https://oopsallaiapi.azurewebsites.net/health')
     print(f'API Status: {r.status_code}')
     print(f'Response: {r.json()}')
 except Exception as e:
@@ -744,7 +740,7 @@ docker-compose up -d --scale api=3
 hackathon-dynamic-pricing/
 ├── 📁 .github/
 │   ├── 📁 workflows/              # CI/CD pipeline configurations
-│   │   ├── ci-cd-pipeline.yml     # Main CI/CD workflow
+│   │   ├── mlops-cicd-workflow.yml # Main MLOps CI/CD workflow
 │   │   ├── model-retraining.yml   # Automated retraining
 │   │   └── ab-test-evaluation.yml # A/B testing workflow
 │   └── README.md                  # CI/CD documentation
@@ -826,14 +822,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 1. **Documentation**: Check this README and `PROJECT_SUMMARY.md`
 2. **GitHub Issues**: Report bugs or request features
 3. **GitHub Discussions**: Ask questions and share ideas
-4. **API Documentation**: Visit http://localhost:8000/docs
+4. **API Documentation**: Visit https://oopsallaiapi.azurewebsites.net/docs
 
 ### Contact
 
-- **Project Lead**: [Your Name]
-- **Team Email**: [team-email@company.com]
-- **Slack Channel**: #dynamic-pricing-ml
-- **Project Board**: [GitHub Projects Link]
+- **Project Team**: [Opps,AllAI]
+- **Team Email**: [oopsallai@tigeranalytics.com]
 
 ---
 
@@ -841,11 +835,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ```bash
 # Quick start in 3 commands
-git clone https://github.com/your-org/hackathon-dynamic-pricing.git
+git clone https://github.com/lokeswar-palpandyan/hackathon-dynamic-pricing.git
 cd hackathon-dynamic-pricing
 docker-compose up -d
 
-# Then visit: http://localhost:8501
+# Then visit: https://oopsallaiui.azurewebsites.net
 ```
 
 **🚀 Your AI-powered dynamic pricing system is now running!**
